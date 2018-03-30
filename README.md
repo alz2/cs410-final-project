@@ -2,6 +2,9 @@
 Extending csillinois search feature
 
 ### Crawling Strategy
+  0) **Stage 0**: Creating professors.csv
+      - For now: Manually lookup professors and record their CV's
+      - CV's tend to be in two formats -- html and pdf.
   1) **Stage 1**: Obtaining Links to Research Papers
       - Given: professors.csv
       - Case 1: pdf
