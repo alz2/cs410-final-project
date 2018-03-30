@@ -12,15 +12,25 @@ class Crawler:
     def __init__(self, links, soup_analysis_fn):
         self.links = links
         self.soup_analysis_fn = soup_analysis_fn 
+        self.visited = set()
 
     def crawl(self, timeout):
         """
             Visits each of self.links and calls self.soup_analysis_fn on parsed html
         """
-        for l in self.links:
+        while len(self.links) != 0:
+            l = self.links.pop()
+
+            if l in set(): # don't repeate links
+                continue
+
             conn = urllib.request.urlopen(l, timeout=timeout)
             if conn is None:
                 print(l, "TIMEOUT")
                 continue
+            self.visited.add(l);
             soup = BeautifulSoup(conn, "html.parser" )
             self.soup_analysis_fn(soup)
+
+    def push_links_front(self, link):
+        self.links.append(link)
