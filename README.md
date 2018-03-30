@@ -5,12 +5,11 @@ Extending csillinois search feature
 **Stage 0**: Creating professors.csv
   * For now: Manually lookup professors and record their CV's   
   * CV's tend to be in two formats -- html and pdf.
+  * Prefer pdf over html!
+  * CSV Schema: Professor_LN, Professor_FN, CV_Link, CV_CODE
       
 **Stage 1**: Obtaining Links to Research Papers
-  * Given: professors.csv
-  * Case 1: pdf
-  * Case 2: html
-  * Case 3: txt
+  * Given: professors CSV in either html of pdf
   * In all cases try to retrieve links to research papers
   * In the case that links to a paper are not present in a cv (e.g [some of these](http://sifaka.cs.uiuc.edu/czhai/selected.html)) store the titles and other info into a list for later google processing
       
