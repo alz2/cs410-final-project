@@ -21,3 +21,9 @@ Extending csillinois search feature
   * Given: Links to text information of undiscovered links from Stage 1.
   * Pass information to google scholar and then obtain links to pdf.
   * Go to Stage 2 to add these to inverted index
+  
+### Idea 2 for grabbing the Prof->links to papers
+1) Obtain list of names of all professors
+2) For professors with google scholar profiles, e.g [Professor Zhai](https://scholar.google.com/citations?user=YU-baPIAAAAJ&hl=en&oi=ao) use Python module [scholarly](https://pypi.python.org/pypi/scholarly/0.2.3) obtain the links to papers.
+3) For professors with no google scholar profiles find other way to obtain links -- maybe python module scholar to recursively crawl google scholar search results.
+4) Save prof->links to papers dict to a json fill so previously crawled papers don't have to be crawled again.
