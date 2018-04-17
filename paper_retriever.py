@@ -75,12 +75,12 @@ class PaperRetriever:
             # add to seen set to prevent re-retrieval
             for prof in self.results.keys():
 
-                if prof not in seen_papers:
+                if prof not in self.seen_papers:
                     self.seen_papers[prof] = set()
 
                 paper_tuples = self.results[prof]
                 for paper in paper_tuples:
-                    seen_papers[prof].add(paper[0]) # add the title to the corresponding set
+                    self.seen_papers[prof].add(paper[0]) # add the title to the corresponding set
             prior_file.close()
 
 
