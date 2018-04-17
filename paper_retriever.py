@@ -7,6 +7,8 @@ seen_mutex = Lock()
 results_mutex = Lock()
 errors_mutex = Lock()
 
+papers_retrieved_per_professor = 0
+
 def _worker_paper_retrieve(author_publications, prof, results, errors, seen):
     for p in author_publications:
         if p.bib['title'] in seen: # seen this paper already
@@ -27,8 +29,9 @@ def _worker_paper_retrieve(author_publications, prof, results, errors, seen):
         results_mutex.acquire()
         try:
             if 'url' in bib:
-                print(prof, bib['title'], bib['url'])
                 results[prof].append( (bib['title'], bib['url']) )
+                papers_retrieved_per_professor += 1
+                print(prof + ": " + str(papers_retrieved_per_professor)) # log to console
             else:
                 # log the title
                 errors[prof].append(bib['title'])
@@ -44,21 +47,37 @@ def splitnchunks(a, n):
 
 class PaperRetriever:
 
-    def __init__(self, professor_list, prior_file_name, num_threads=1):
+    """
+        Constructor for the PaperRetriever:
+        Params:
+            professor_list: List of professor names
+            history: a json dict of previously retrived dict of key=professor, value=[(title, link)]. 
+                    Can be None if running without history
+            num_threads: (default 1) Number of threads used to parse scholar... be careful of 503s
+            save_as: file to the newly parsed json
+            
+    """
+    def __init__(self, professor_list, save_as, history, num_threads=1):
+        if professor_list is None:
+            raise ValueError('Must provide a list of professors')
+
         self.professors = professor_list # list of professor names
         self.results = {} # dict of key=professor, value=[(title, link),...] for each paper
-        self.errors = {} # dict of key=professor, value=set of titles of papers in which errors were encounterd
         self.seen_papers = {} # dict of key=professor, value=set of titles of retrieved papers
+        if save_as is None:
+            raise ValueError('Must provide a save file')
+        self.save_as = save_as
         self.num_threads = num_threads
 
-        if prior_file_name is not None: # open and read previously retrieved links
-            prior_file = open(prior_file_name, "r");
+        # open and read previously retrieved links
+        if history is not None:
+            prior_file = open(history, "r");
             self.results = json.load(prior_file) # parse json
             # add to seen set to prevent re-retrieval
             for prof in self.results.keys():
 
                 if prof not in seen_papers:
-                    seen_papers[prof] = set()
+                    self.seen_papers[prof] = set()
 
                 paper_tuples = self.results[prof]
                 for paper in paper_tuples:
@@ -68,6 +87,9 @@ class PaperRetriever:
 
     def retrieve(self):
         for prof in self.professors:
+
+            print("Retrieving Papers for ", prof)
+            papers_retrieved_per_professor = 0
 
             if prof not in self.results:
                 self.results[prof] = []
@@ -98,14 +120,27 @@ class PaperRetriever:
             # join threads
             for i in range(self.num_threads):
                 t[i].join()
+
+            # save the file
+            self.save_results_as_json()
+            self.save_errors_as_json()
         
         return self.results
 
-    def save_results_as_json(self, outfile_name):
+
+    def save_results_as_json(self):
         json_str = json.dumps(self.results)
-        with open(outfile_name, "w+") as outfile:
-            outfile_name.write(json_str)
+        with open(self.save_as, "w+") as outfile: # truncate aka rewrite
+            outfile.write(json_str)
         outfile.close()
+
+    def save_errors_as_json(self):
+        json_str = json.dumps(self.errors)
+        if len(json_str) != 0:
+            err_file_name = "ERRORS_" + self.save_as 
+            with open(err_file_name, "w+"):
+                err_file_name.write(json_str)
+            err_file_name.close()
 
 
 
