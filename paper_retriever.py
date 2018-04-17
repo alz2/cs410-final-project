@@ -7,7 +7,6 @@ seen_mutex = Lock()
 results_mutex = Lock()
 errors_mutex = Lock()
 
-papers_retrieved_per_professor = 0
 
 def _worker_paper_retrieve(author_publications, prof, results, errors, seen):
     for p in author_publications:
@@ -30,8 +29,7 @@ def _worker_paper_retrieve(author_publications, prof, results, errors, seen):
         try:
             if 'url' in bib:
                 results[prof].append( (bib['title'], bib['url']) )
-                papers_retrieved_per_professor += 1
-                print(prof + ": " + str(papers_retrieved_per_professor)) # log to console
+                print(prof + ": " + str(len(results[prof]))) # log to console
             else:
                 # log the title
                 errors[prof].append(bib['title'])
@@ -89,8 +87,7 @@ class PaperRetriever:
     def retrieve(self):
         for prof in self.professors:
 
-            print("Retrieving Papers for ", prof)
-            papers_retrieved_per_professor = 0
+            print("Retrieving Papers for", prof)
 
             if prof not in self.results:
                 self.results[prof] = []
@@ -139,9 +136,9 @@ class PaperRetriever:
         json_str = json.dumps(self.errors)
         if len(json_str) != 0:
             err_file_name = "ERRORS_" + self.save_as 
-            with open(err_file_name, "w+"):
-                err_file_name.write(json_str)
-            err_file_name.close()
+            with open(err_file_name, "w+") as err_file:
+                err_file.write(json_str)
+            err_file.close()
 
 
 
