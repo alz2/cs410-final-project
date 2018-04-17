@@ -47,7 +47,7 @@ class PaperRetriever:
 
     """
         Constructor for the PaperRetriever:
-        Params:
+        Args:
             professor_list: List of professor names
             history: a json dict of previously retrived dict of key=professor, value=[(title, link)]. 
                     Can be None if running without history
@@ -84,6 +84,13 @@ class PaperRetriever:
             prior_file.close()
 
 
+    """
+        This function will go through self.professors and retrieve the url of each paper the PaperRetriever can find.
+        The papers retrieved will be new -- that is it will not re-retrieve URLs for paper's it has already retrieved.
+
+        After each paper from a professor is retrieved, the PaperRetriever will save the current results to self.save_as
+        to prevent a crash from messing up the whole crawl.
+    """
     def retrieve(self):
         for prof in self.professors:
 
@@ -126,12 +133,18 @@ class PaperRetriever:
         return self.results
 
 
+    """
+    Dump the contents of self.results into a self.save_as as json
+    """
     def save_results_as_json(self):
         json_str = json.dumps(self.results)
         with open(self.save_as, "w+") as outfile: # truncate aka rewrite
             outfile.write(json_str)
         outfile.close()
 
+    """
+    Dump the contents of self.errors into ERRORS_<self.save_as> as json
+    """
     def save_errors_as_json(self):
         json_str = json.dumps(self.errors)
         if len(json_str) != 0:
