@@ -64,6 +64,7 @@ class PaperRetriever:
         self.professors = professor_list # list of professor names
         self.results = {} # dict of key=professor, value=[(title, link),...] for each paper
         self.seen_papers = {} # dict of key=professor, value=set of titles of retrieved papers
+        self.errors = {}
         if save_as is None:
             raise ValueError('Must provide a save file')
         self.save_as = save_as
