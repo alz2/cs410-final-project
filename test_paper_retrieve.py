@@ -9,7 +9,10 @@ profs = []
 profs_file = 'professors.txt'
 with open(profs_file, 'r') as pfile:
     for p in pfile:
-        profs.append(p)
+        if (p[-1] == '\n'): # don't keep the new line!
+            profs.append(p[len(p) - 1])
+        else:
+            profs.append(p)
 
 retriever = PaperRetriever(profs, save_as_file, history_file, num_threads=3) # num_threads=4 causes 503s :(
 results = retriever.retrieve()
