@@ -1,8 +1,12 @@
 from paper_retriever import PaperRetriever
 from time import gmtime, strftime
+import sys
 
-history_file = "parsed_prof_papers.json"
-save_as_file = "papers_" + strftime("%Y-%m-%d_%H:%M:%S", gmtime()) + ".json"
+if len(sys.argv) != 2:
+    raise ValueError('Usage python3 test_paper_retrieve.py {HISTORY_FILE}')
+
+history_file = sys.argv[1]
+save_as_file = "data/papers_" + strftime("%Y-%m-%d_%H:%M:%S", gmtime()) + ".json"
 
 
 profs = []
