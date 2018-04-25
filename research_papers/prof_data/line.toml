@@ -1,0 +1,6 @@
+type = "line-corpus"
+metadata = [{name = "path", type = "string"},
+            {name = "content", type = "string"}]
+
+
+
