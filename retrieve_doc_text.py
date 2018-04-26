@@ -14,6 +14,8 @@ with open(sys.argv[1]) as infile:
     for prof in prof_papers:
         papers = prof_papers[prof]
         for paper_info in papers:
+            if len(paper_info) < 2:
+                continue
             paper_link = paper_info[1]
             if paper_link[len(paper_link) - 4:] == ".pdf": # pdf
                 print(paper_link)
