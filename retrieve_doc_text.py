@@ -7,10 +7,18 @@ import urllib.request
 
 if len(sys.argv) != 2:
     raise ValueError('provide a file pls')
+def save_file():
+    out_file_name = 'DOCSINCLUDED_test.json'
+    json_str = json.dumps(prof_papers)
+    with open(out_file_name, "w+") as outfile: # truncate aka rewrite
+        outfile.write(json_str)
+    outfile.close()
 
 
 with open(sys.argv[1]) as infile:
     prof_papers = json.load(infile)
+    processed = 0
+    pdfs = 0
     for prof in prof_papers:
         papers = prof_papers[prof]
         for paper_info in papers:
@@ -18,13 +26,13 @@ with open(sys.argv[1]) as infile:
                 continue
             paper_link = paper_info[1]
             if paper_link[len(paper_link) - 4:] == ".pdf": # pdf
-                print(paper_link)
+                pdfs += 1
             else: # html
                 # https://stackoverflow.com/questions/328356/extracting-text-from-html-file-using-python
                 if len(paper_info) >= 3:
                     continue
                 try:
-                    conn = urllib.request.urlopen(paper_link)
+                    conn = urllib.request.urlopen(paper_link, timeout=60)
                 except:
                     papers.append("")
 
@@ -58,15 +66,16 @@ with open(sys.argv[1]) as infile:
                     res = text
                 else:
                     res = text[ : text.index(' ', 1000) ]
-
                 # push back to 2'nd index
                 papers.append(res)
- 
-    out_file_name = 'DOCSINCLUDED_' + sys.argv[1]
-    json_str = json.dumps(prof_papers)
-    with open(out_file_name, "w+") as outfile: # truncate aka rewrite
-        outfile.write(json_str)
-    outfile.close()
+                prof_papers[prof] = papers # update
+                
+                processed += 1
+                print("RETRIEVED DOCS ", processed)
+                if processed % 500 == 0: # save every 500
+                    save_file()
+
+        save_file() 
 
 infile.close()
 
