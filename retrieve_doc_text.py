@@ -82,7 +82,7 @@ with open(sys.argv[1]) as infile:
                 
                 processed += 1
                 print("RETRIEVED DOCS ", processed)
-                if processed % 500 == 0: # save every 500
+                if processed % 100 == 0: # save every 500
                     save_file()
 
         save_file() 
