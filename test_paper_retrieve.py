@@ -6,7 +6,7 @@ if len(sys.argv) != 2:
     raise ValueError('Usage python3 test_paper_retrieve.py {HISTORY_FILE}')
 
 history_file = sys.argv[1]
-save_as_file = "data/papers_" + strftime("%Y-%m-%d_%H:%M:%S", gmtime()) + ".json"
+save_as_file = "data/papers_" + strftime("%Y-%m-%d_%H-%M-%S", gmtime()) + ".json"
 
 
 profs = []
