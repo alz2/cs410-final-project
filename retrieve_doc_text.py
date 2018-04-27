@@ -3,6 +3,7 @@ import sys
 from bs4 import BeautifulSoup
 import urllib.request
 
+
 # https://www.quora.com/How-can-I-extract-only-text-data-from-HTML-pages
 
 if len(sys.argv) != 2:
@@ -35,17 +36,26 @@ with open(sys.argv[1]) as infile:
                     conn = urllib.request.urlopen(paper_link, timeout=60)
                 except:
                     papers.append("")
+                    prof_papers[prof] = papers
+                    continue
 
                 if conn is None: # connection failed... Content is empty string
                     papers.append("")
+                    prof_papers[prof] = papers
                     continue
                 else: # check the code
                     resp_code = conn.getcode()
                     if resp_code != 200: # only move foreward with 200's
                         papers.append("")
+                        prof_papers[prof] = papers
                         continue
 
                 soup = BeautifulSoup(conn, 'html.parser')
+
+                #
+                # OKAY GOOD CONNECTION AND EVERYTHING WENT WELL
+                #
+
                 # kill all script and style elements
                 for script in soup(["script", "style"]):
                     script.extract()    # rip it out
