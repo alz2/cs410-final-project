@@ -35,12 +35,12 @@ with open(sys.argv[1]) as infile:
                 try:
                     conn = urllib.request.urlopen(paper_link, timeout=60)
                 except:
-                    papers.append("")
+                    paper_info.append("")
                     prof_papers[prof] = papers
                     continue
 
                 if conn is None: # connection failed... Content is empty string
-                    papers.append("")
+                    paper_info.append("")
                     prof_papers[prof] = papers
                     continue
                 else: # check the code
@@ -77,12 +77,11 @@ with open(sys.argv[1]) as infile:
                 else:
                     res = text[ : text.index(' ', 1000) ]
                 # push back to 2'nd index
-                papers.append(res)
-                prof_papers[prof] = papers # update
+                paper_info.append(res)
                 
                 processed += 1
                 print("RETRIEVED DOCS ", processed)
-                if processed % 100 == 0: # save every 500
+                if processed % 50 == 0: # save every 50
                     save_file()
 
         save_file() 
