@@ -2,6 +2,7 @@ import json
 import sys
 from bs4 import BeautifulSoup
 from selenium import webdriver
+import time
 
 #import urllib.request ## urllib request does not get javascript webpages
 
@@ -58,7 +59,8 @@ with open(sys.argv[1]) as infile:
             if len(paper_info) < 2:
                 continue
             paper_link = paper_info[1]
-            if paper_link[len(paper_link) - 4:] == ".pdf": # pdf
+            ending = paper_link[len(paper_link) - 4 : ]
+            if ending == ".pdf" or ending == "=pdf": # pdf
                 pdfs += 1
             else: # html
                 # https://stackoverflow.com/questions/328356/extracting-text-from-html-file-using-python
@@ -71,6 +73,7 @@ with open(sys.argv[1]) as infile:
                     prof_papers[prof] = papers
                     continue
 
+                time.sleep(2) # sleep for 2 seconds hopefully thats enough for js to render on page
                 html = driver.page_source
                 soup = BeautifulSoup(html, 'html.parser')
 
