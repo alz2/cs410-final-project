@@ -78,7 +78,7 @@ with open(sys.argv[1], 'r') as infile:
             if len(paper_info) < 2: # this shouldn't happen but there seems to be some data inside the json which do not have links?
                 continue
 
-            if len(paper_info) >= 3: # already processed
+            if len(paper_info) >= 3 and len(paper_info[2]) != 0: # already processed with no errors
                 processed += 1 
                 continue
 
