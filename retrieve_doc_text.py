@@ -75,10 +75,13 @@ with open(sys.argv[1], 'r') as infile:
         papers = prof_papers[prof]
         for paper_info in papers:
 
+            if len(paper_info) > 3:
+                raise ValueError(str(paper_info) + ' has more than 3 elems... INVALID JSON')
+
             if len(paper_info) < 2: # this shouldn't happen but there seems to be some data inside the json which do not have links?
                 continue
 
-            if len(paper_info) >= 3 and len(paper_info[2]) != 0: # already processed with no errors
+            if len(paper_info) == 3 and len(paper_info[2]) != 0: # already processed with no errors
                 processed += 1 
                 continue
 
@@ -103,7 +106,10 @@ with open(sys.argv[1], 'r') as infile:
                 #
 
                 res = extract_text_from_soup(soup)
-                paper_info.append(res)
+                if len(paper_info) == 3:
+                    paper_info[2] = res
+                else:
+                    paper_info.append(res)
                 #print(paper_info)
 
                 processed += 1
