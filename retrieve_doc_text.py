@@ -3,6 +3,7 @@ import sys
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import time
+from time import gmtime, strftime
 
 #import urllib.request ## urllib request does not get javascript webpages
 
@@ -12,22 +13,32 @@ import time
 
 
 if len(sys.argv) != 2:
-    raise ValueError('provide a file pls')
+    raise ValueError('python3 retrieve_doc_text.py {PROF->PAPER_URL json}')
+
+save_file_title ="data/papers_" + strftime("%Y-%m-%d_%H-%M-%S", gmtime()) + ".json"
+
 
 def save_file():
-    out_file_name = 'DOCSINCLUDED_test.json'
+    out_file_name = save_file_title
     json_str = json.dumps(prof_papers)
     with open(out_file_name, "w+") as outfile: # truncate aka rewrite
         outfile.write(json_str)
     outfile.close()
 
 def extract_text_from_soup(soup):
+    # https://stackoverflow.com/questions/328356/extracting-text-from-html-file-using-python
     # kill all script and style elements
-    for script in soup(["script", "style"]):
+    if soup is None:
+        return ""
+
+    for script in soup(["script", "style", "iframe", "img"]):
         script.extract()    # rip it out
 
     # get text
-    text = soup.body.get_text() # could do soup.body.get_text if don't want to extract head
+    if soup.body is not None:
+        text = soup.body.get_text() # could do soup.body.get_text if don't want to extract head
+    else:
+        text = soup.get_text()
 
     # break into lines and remove leading and trailing space on each
     lines = (line.strip() for line in text.splitlines())
@@ -40,12 +51,19 @@ def extract_text_from_soup(soup):
     # only grabbing 1000 chars respecting word boundaries
     if len(text) <= 5000:
         res = text
-    else:
-        res = text[ : text.index(' ', 5000) ]
+    else: # try to get the end of the word
+        try:
+            end_of_word = text.index(' ', 5000)
+        except ValueError: # this happens to be the last word!
+            return text
+
+        res = text[ : end_of_word ] # cut text corpus off
     return res 
 
 
-with open(sys.argv[1]) as infile:
+
+
+with open(sys.argv[1], 'r') as infile:
 
     driver = webdriver.PhantomJS() # browser
     driver.set_page_load_timeout(30) # 30 second timeout per page
@@ -56,16 +74,19 @@ with open(sys.argv[1]) as infile:
     for prof in prof_papers:
         papers = prof_papers[prof]
         for paper_info in papers:
-            if len(paper_info) < 2:
+
+            if len(paper_info) < 2: # this shouldn't happen but there seems to be some data inside the json which do not have links?
                 continue
+
+            if len(paper_info) >= 3: # already processed
+                processed += 1 
+                continue
+
             paper_link = paper_info[1]
             ending = paper_link[len(paper_link) - 4 : ]
             if ending == ".pdf" or ending == "=pdf": # pdf
                 pdfs += 1
             else: # html
-                # https://stackoverflow.com/questions/328356/extracting-text-from-html-file-using-python
-                if len(paper_info) >= 3:
-                    continue
                 try:
                     driver.get(paper_link)
                 except:
@@ -83,7 +104,7 @@ with open(sys.argv[1]) as infile:
 
                 res = extract_text_from_soup(soup)
                 paper_info.append(res)
-                print(paper_info)
+                #print(paper_info)
 
                 processed += 1
                 print("RETRIEVED DOCS ", processed)
