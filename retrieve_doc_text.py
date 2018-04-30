@@ -94,8 +94,11 @@ with open(sys.argv[1], 'r') as infile:
                     print(prof, paper_link)
                     driver.get(paper_link)
                 except:
-                    paper_info.append("")
-                    prof_papers[prof] = papers
+                    if len(paper_info) == 3:
+                        paper_info[2] = ""
+                    else:
+                        paper_info.append(res)
+                    prof_papers[prof] = ""
                     continue
 
                 time.sleep(2) # sleep for 2 seconds hopefully thats enough for js to render on page
