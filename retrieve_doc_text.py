@@ -91,6 +91,7 @@ with open(sys.argv[1], 'r') as infile:
                 pdfs += 1
             else: # html
                 try:
+                    print(prof, paper_link)
                     driver.get(paper_link)
                 except:
                     paper_info.append("")
