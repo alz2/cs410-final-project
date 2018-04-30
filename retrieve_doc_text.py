@@ -82,7 +82,7 @@ with open(sys.argv[1], 'r') as infile:
                 continue
 
             if len(paper_info) == 3 and len(paper_info[2]) != 0: # already processed with no errors
-                processed += 1 
+                #processed += 1  for saving sakes commented out
                 continue
 
             paper_link = paper_info[1]
@@ -107,6 +107,9 @@ with open(sys.argv[1], 'r') as infile:
                 #
 
                 res = extract_text_from_soup(soup)
+                if len(res) != 0:
+                    print('SUCCESS!')
+
                 if len(paper_info) == 3:
                     paper_info[2] = res
                 else:
