@@ -1,0 +1,21 @@
+early design informal
+what is data structure analysis
+language models for information retrieval
+vulnerabilities in real time systems 
+how to use neural networks to learn
+comparing smoothing methods for information retrieval. 
+Brian Bailey research papers
+Why do students take exams later rather than sooner
+AI research 
+Network programming challenges for mobile app developers. 
+Machine translation methods
+How to improve efficiency of algorithm to reduce computational time
+Deep learning feature representation
+CPU design and efficiency
+How do we can recognize natural scene categories
+Has anyone worked on unsupervised speech enhancement
+Examples of parallel numerical algorithms
+Research on np completeness
+How to do probabilistic forecast of world events 
+Use of graphs in social networks
+
