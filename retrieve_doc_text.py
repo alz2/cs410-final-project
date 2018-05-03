@@ -84,6 +84,7 @@ def extract_text_from_pdf(fullname):
     f = open(fullname, 'rb') 
     try:
         pdfReader = PyPDF2.PdfFileReader(f) # open file
+        file_pages = pdfReader.numPages
     except: # error :(
         f.close()
         os.remove(fullname)
@@ -91,12 +92,22 @@ def extract_text_from_pdf(fullname):
 
     text = ""
     pg_ct = 0
-    file_pages = pdfReader.numPages
-    while pg_ct < file_pages and len(text) < 5000: # 5000 chars
-        pageObj = pdfReader.getPage(pg_ct)
-        page_text = pageObj.extractText().strip()
-        text += page_text + " " # safety space for pages
-        pg_ct += 1
+    try:
+        while pg_ct < file_pages and len(text) < 5000: # 5000 chars
+            pageObj = pdfReader.getPage(pg_ct)
+            page_text = pageObj.extractText().strip()
+            text += page_text + " " # safety space for pages
+            pg_ct += 1
+    except:
+        pass
+
+    # break into lines and remove leading and trailing space on each
+    lines = (line.strip() for line in text.splitlines())
+    # break multi-headlines into a line each
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    # drop blank lines
+    text = '\n'.join(chunk for chunk in chunks if chunk)
+    text = text.replace('\n', ' ') # replace new lines with spaces
 
     if len(text) > 5000:
         # trim to length
