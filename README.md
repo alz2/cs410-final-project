@@ -15,6 +15,9 @@ $ pip3 install scholarly --user
 
 # install selenium
 $ pip3 install selenium --user
+
+# install PyPDF2
+$ pip3 install pypdf2 --user
 ```
 
 ## Methodology For Retrieving Data for Inverted Index
