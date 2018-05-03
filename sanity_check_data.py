@@ -85,4 +85,9 @@ print(pdf_parsed, 'total pdf documents parsed')
 print(pdf_errs, 'total pdf documents unparsed')
 
 print("######## ERRORS BY PROFESSOR #######")
-print(prof_failures_dict)
+prof_print_dict = {}
+for prof in prof_failures_dict.keys():
+    if prof_failures_dict[prof] != 0:
+        prof_print_dict[prof] = prof_failures_dict[prof]
+
+print(prof_print_dict)
