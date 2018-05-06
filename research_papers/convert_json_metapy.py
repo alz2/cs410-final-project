@@ -39,7 +39,7 @@ for curPerson in my_dict.keys():
        # doc_content = "Text for doc number {} of Professor {} goes here".format(i, curPerson) #placeholder for actual document content
 
         
-        new_doc_metadata = "{}	{}\n".format(research_info[1], docText[:1000])     #important: tab needed to delinate schema of each file for metadata.dat.
+        new_doc_metadata = "{}	{}	{}\n".format(research_info[0], research_info[1], docText[:500])     #important: tab needed to delinate schema of each file for metadata.dat.
                                                                                             #only store the first 1000 characters of data in the metadata file. 
         corpus_file.write(new_doc) #write as a document. one doc per line
         metadata_file.write(new_doc_metadata)

@@ -19,9 +19,12 @@ def get_matching_docs(txtToFind, numberOfResults = 10):
 
 def print_results(best_docs):
     for num, (d_id, _) in enumerate(best_docs):
+        #get title and content. 
+        title = idx.metadata(d_id).get('title')
         content = idx.metadata(d_id).get('content')
-        print("{}. {}...\n".format(num + 1, content[0:30])) #number of characters in doc to print. 
-
+        #print("{}. {}...\n".format(num + 1, content[0:30])) #number of characters in doc to print.
+        result = "{resultNum}. {docTitle}\n{docTxt}\n".format(resultNum = num+1, docTitle = title, docTxt= content[0:50])
+        print(result)
 
 
 
