@@ -15,12 +15,20 @@ import os
 seen_mutex = Lock()
 results_mutex = Lock()
 errors_mutex = Lock()
-dirpath = tempfile.TemporaryDirectory()
+dirpath = tempfile.TemporaryDirectory() # temporary directory which will be cleaned up automatically by garbege collection
 
-#
+# ----------------------------------------------------------------------------
 # HELPERS
-#
+# ----------------------------------------------------------------------------
 
+"""
+Given a soup object parsed by BeautifulSoup, extract around 5000 chars 
+respecting word boundaries from the texts of the htmls
+Args:
+    soup -- BeautifulSoup parsed html/connection
+Return:
+    String of text
+"""
 def extract_text_from_soup(soup):
     # https://stackoverflow.com/questions/328356/extracting-text-from-html-file-using-python
     # kill all script and style elements
@@ -32,7 +40,7 @@ def extract_text_from_soup(soup):
 
     # get text
     if soup.body is not None:
-        text = soup.body.get_text() # could do soup.body.get_text if don't want to extract head
+        text = soup.body.get_text() # or soup.get_text()
     else:
         text = soup.get_text()
 
@@ -57,6 +65,13 @@ def extract_text_from_soup(soup):
     return res 
 
 
+"""
+Given a url string determine whether or not it represents a pdf
+Args:
+    link -- string url
+Return:
+    True/False
+"""
 def is_pdf(link):
     if len(link) < 4:
         return False
@@ -64,6 +79,15 @@ def is_pdf(link):
     return ending == ".pdf" or ending == "=pdf" # pdf
 
 
+"""
+Downloads pdf from link as 'name' in directory 'dirpath'
+Args:
+    link -- url of pdf
+    name -- name to save pdf as
+    dirpath -- path to the save directory
+Return:
+    String path to the pdf
+"""
 def retrive_pdf(link, name, dirpath):
     fullname = dirpath + '/' + name
     try:
@@ -73,6 +97,13 @@ def retrive_pdf(link, name, dirpath):
     return fullname
 
 
+"""
+Extracts around 5000 chars respecting word boundaries from pdf
+Args:
+    fullname -- full path to pdf
+Return:
+    String result
+"""
 def extract_text_from_pdf(fullname):
     f = open(fullname, 'rb') 
     try:
@@ -118,6 +149,9 @@ def extract_text_from_pdf(fullname):
     return res
 
 
+"""
+Helper function to make sure document text is added to right index
+"""
 def insert_doc_text(paper_info, doc_text):
     if len(paper_info) == 2:
         paper_info.append(doc_text)
@@ -125,6 +159,12 @@ def insert_doc_text(paper_info, doc_text):
         paper_info[2] = doc_text
 
 
+"""
+Retrieves the document text of a paper_info list. Modifies paper_info.
+Args:
+    paper_info -- [NAME_OF_PAPER, LINK, <optional>""]
+    driver -- selenium webdriver used to retrieve html results
+"""
 def retrieve_doc_text(paper_info, driver):
     link = paper_info[1]
     print(link)
@@ -154,6 +194,9 @@ def retrieve_doc_text(paper_info, driver):
         insert_doc_text(paper_info, res)
 
 
+"""
+Helper function for threads. This is basically the main retrieval method
+"""
 def _worker_paper_retrieve(author_publications, prof, results, errors, seen, driver):
     for p in author_publications:
         if p.bib['title'] not in seen: # have not seen the paper-- must retrieve URL
@@ -184,7 +227,10 @@ def _worker_paper_retrieve(author_publications, prof, results, errors, seen, dri
             retrieve_doc_text(pi, driver)
 
 
+"""
+Helper function to splti a list to n chunks
 # https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
+"""
 def splitnchunks(a, n):
     k, m = divmod(len(a), n)
     return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
