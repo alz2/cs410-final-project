@@ -9,6 +9,8 @@ ranker = metapy.index.OkapiBM25() #try different rankers to see which is best.
 
 
 def get_matching_docs(txtToFind, numberOfResults = 10):
+    print("Searching for:" + txtToFind)
+    print()
     query = metapy.index.Document()
     query.content(txtToFind)
     best_docs = ranker.score(idx, query, num_results = numberOfResults)
@@ -25,7 +27,7 @@ def print_results(best_docs):
 
 
 
-best_docs = get_matching_docs("Zhai clustering") #specify text to search for here
+best_docs = get_matching_docs("Zhai cluster") #specify text to search for here
 print(best_docs)
 print_results(best_docs)
 

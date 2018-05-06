@@ -3,7 +3,7 @@ import io
 
 my_dict = {}
 
-with io.open('test_json.json', 'r', encoding="utf-8") as json_file:
+with io.open('../data/papers_2018-05-03_01-58-24.json', 'r', encoding="utf-8") as json_file:
     my_dict = json.loads(json_file.read()) #read file into memory.
 
 
@@ -17,18 +17,30 @@ for curPerson in my_dict.keys():
     #for each professor
 
     i = 0
-    
+
+
+    if len(my_dict[curPerson]) == 0: #if there is no data for a given professor, move on. 
+            continue #no data. 
+
     for research_info in my_dict[curPerson]:
-        #research_info is the  [doc title, doc link].  ***Also want some text of document (not currently available), so making up some text as  a temporary measure. 
+        #research_info is the  [doc title, doc link, doc text] for one professor.
 
-        #create a new doc, using the author's name, document title and also some text from the document. 
-        new_doc =  "{author} {title} {link}\n".format(author = curPerson, title = research_info[0], link = research_info[1])
+      
+        #create a new doc, using the author's name, document title and also some text from the document.
+        docText = research_info[2]
+        if not docText.strip():
+            docText = "Text not available for this document"
 
-
-        doc_content = "Text for doc number {} of Professor {} goes here".format(i, curPerson) #placeholder for actual document content
 
         
-        new_doc_metadata = "{}	{}\n".format(research_info[1], doc_content)     #important: tab needed to delinate schema of each file for metadata.dat. 
+        new_doc =  "{author} {title} {docTxt}\n".format(author = curPerson, title = research_info[0], docTxt = docText)
+
+
+       # doc_content = "Text for doc number {} of Professor {} goes here".format(i, curPerson) #placeholder for actual document content
+
+        
+        new_doc_metadata = "{}	{}\n".format(research_info[1], docText[:1000])     #important: tab needed to delinate schema of each file for metadata.dat.
+                                                                                            #only store the first 1000 characters of data in the metadata file. 
         corpus_file.write(new_doc) #write as a document. one doc per line
         metadata_file.write(new_doc_metadata)
 
