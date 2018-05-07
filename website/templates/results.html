@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+        <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+        <!------ Include the above in your HEAD tag ---------->
+    </head>
+
+    <body>
+        <div class="container">
+
+            <hgroup class="mb20">
+            <h1>Search Results</h1>
+            <h2 class="lead"><strong class="text-danger">{{num_results}}</strong> results were found for the search for <strong class="text-danger">{{query}}</strong></h2>								
+            </hgroup>
+
+            <section class="col-xs-12 col-sm-6 col-md-12">
+                {% for n in search_results %}
+                <article class="search-result row">
+                    <div class="col-xs-12 col-sm-12 col-md-7 excerpet">
+                        <h3><a href={{n[0]}} title="">{{n[1]}}</a></h3>
+                        <p>{{n[2]}}</p>						
+                    </div>
+                    <span class="clearfix borda"></span>
+                </article>
+                {% endfor %}
+            </section>
+        </div>
+    </body>
+</html>

@@ -56,20 +56,26 @@ def get_first_sentence(text):
         return ''
     return sentences[0]
 
-def format_results(best_docs, query):
+def format_results(best_docs, query): 
+    # result (link, title, description)
     formatted = []
     for num, (d_id, _) in enumerate(best_docs):
-        #get title and content. 
-        title = idx.metadata(d_id).get('title')
+        search_result = []
+        #get url, title, and description
         path = idx.metadata(d_id).get('path')
+        search_result.append(path)
+
+        title = idx.metadata(d_id).get('title')
+        search_result.append(title)
+
         content = cleanhtml(idx.metadata(d_id).get('content'))
         summary = get_peripheral(content, query, 10)
         if len(summary) == 0:
             summary = get_first_sentence(content)
-        #print("{}. {}...\n".format(num + 1, content[0:30])) #number of characters in doc to print.
-        result = "{resultNum}. <a href={url}>{docTitle}</a><p>...{desc}...</p>".format(resultNum = num+1, docTitle = title, url = path, desc = summary)
-        formatted.append(result)
-    return ("<p>" + "</p><p>".join(formatted) + "</p>") 
+        search_result.append(summary)
+        formatted.append(search_result)
+     
+    return formatted
 
 
 @app.route('/')
@@ -82,8 +88,8 @@ def my_form_post():
     print('querying', query)
     #processed_text = text.upper()
     best_docs = get_matching_docs(query) #specify text to search for here
-    processed_text = format_results(best_docs, query)
-    return processed_text
+    search_results = format_results(best_docs, query)
+    return render_template('results.html', search_results=search_results, num_results=len(best_docs), query=query)
 
 
 
