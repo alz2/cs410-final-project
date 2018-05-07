@@ -22,20 +22,21 @@ def get_matching_docs(txtToFind, numberOfResults = 10):
 
 def get_peripheral(text, target, n):
     corpus_words = text.split(" ")
-    target_words = target.split(" ")
+    target_words = target.lower().split(" ")
+    corpus_words_lower = text.lower().split(" ")
     attempt = 0
     found = False
     target_occur = -1
     while not found:
-        try:
-            target_occur = corpus_words.index(target_words[0], attempt)
+        try: # search lower case
+            target_occur = corpus_words_lower.index(target_words[0], attempt)
         except ValueError:
             return ''
         # occurance of first string in target
         toff = 1
         found_seq = True
         for ti in range(1, len(target_words)):
-            if target_words[toff] != corpus_words[target_occur + ti]:
+            if target_words[toff] != corpus_words_lower[target_occur + ti]:
                 found_seq = False
                 break
             toff += 1
