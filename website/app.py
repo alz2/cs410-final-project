@@ -36,6 +36,9 @@ def get_peripheral(text, target, n):
         toff = 1
         found_seq = True
         for ti in range(1, len(target_words)):
+            if target_occur + ti >= len(corpus_words_lower): # no more words in corpus
+                return ''
+
             if target_words[toff] != corpus_words_lower[target_occur + ti]:
                 found_seq = False
                 break
