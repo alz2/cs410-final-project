@@ -1,23 +1,34 @@
 # cs410-final-project
 Adding UIUC Research Paper Search Functionality to cs@illinois search
 
-## Instalation
+## See it in action!
+[Our app](https://whispering-reef-85517.herokuapp.com/)
+
+## Crawler Installation (Only needed if you want to recrawl)
 
 ### On EWS
 ```
 # install PhantomJS
-$ wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-$ tar xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2
+wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+tar xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2
 # ADD phantomjs-2.1.1-linux-x86_64.tar.bz2/bin to $PATH
 
 # install scholarly
-$ pip3 install scholarly --user
+pip3 install scholarly --user
 
 # install selenium
-$ pip3 install selenium --user
+pip3 install selenium --user
 
 # install PyPDF2
-$ pip3 install pypdf2 --user
+pip3 install pypdf2 --user
+```
+
+## Website Installation
+```
+# install Flask
+pip3 install flask --user
+# inside website
+FLASK_APP=app.py flask app run
 ```
 
 ## Methodology For Retrieving Data for Inverted Index
