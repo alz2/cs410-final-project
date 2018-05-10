@@ -1,5 +1,35 @@
 import json
 import io
+import metapy
+
+
+
+def stem_string(original_str):
+    """
+    Returns:
+           (new_str) a new string, where each word in original str has been stemmed
+    """ 
+    doc = metapy.index.Document()
+    doc.content(original_str)
+
+    #make tokenizer and suppress tags to prevent boundary tags from being added.  (e.g. <s> and </s>)
+    str_tokenizer = metapy.analyzers.ICUTokenizer(suppress_tags=True)
+    str_tokenizer.set_content(doc.content())
+    str_tokenizer = metapy.analyzers.Porter2Filter(str_tokenizer)
+    str_tokenizer.set_content(doc.content())
+
+    full_str = ""
+    try:
+        for token in str_tokenizer:
+            full_str += token + " "
+    except:
+        pass
+    
+
+    return full_str
+
+
+
 
 my_dict = {}
 
@@ -38,8 +68,8 @@ for curPerson in my_dict.keys():
 
        # doc_content = "Text for doc number {} of Professor {} goes here".format(i, curPerson) #placeholder for actual document content
 
-        
-        new_doc_metadata = "{}\t{}\t{}\n".format(research_info[0], research_info[1], docText[:500])     #important: tab needed to delinate schema of each file for metadata.dat.
+        partial_txt = docText[:500] #using 500 characters of text for the metadata file. 
+        new_doc_metadata = "{}\t{}\t{}\t{}\n".format(research_info[0], research_info[1], partial_txt, stem_string(partial_txt))     #important: tab needed to delinate schema of each file for metadata.dat.
                                                                                             #only store the first 1000 characters of data in the metadata file. 
         corpus_file.write(new_doc) #write as a document. one doc per line
         metadata_file.write(new_doc_metadata)
