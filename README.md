@@ -1,5 +1,5 @@
 # cs410-final-project
-Adding UIUC Research Paper Search Functionality to cs@illinois search
+We crawled over 12,000 research papers written by our UIUC Computer Science Faculty and provided a search interface for the papers.
 
 ## See it in action!
 [Our app](https://whispering-reef-85517.herokuapp.com/)
@@ -55,7 +55,6 @@ The RPR module handles both links that point to web documents as well as pdf fil
 
 #### Incremental Crawling
 The RPR also supports incremental crawling via a history file. The history file is in the same format as the json file saved by the crawler. If there is sufficient information for each paper in the history file, the RPR crawler will not crawl it again. The history file is especially useful if the crawler runs into 503's in which it has to restart the crawl on a different IP. 
-
 
 #### Example of using RPR Crawler Module To Crawl Papers Given List of Professors
 ```python
