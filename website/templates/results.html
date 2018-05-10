@@ -10,8 +10,8 @@
         <div class="container">
 
             <hgroup class="mb20">
-            <h1>Search Results</h1>
-            <h2 class="lead"><strong class="text-danger">{{num_results}}</strong> results were found for the search for <strong class="text-danger">{{query}}</strong></h2>								
+            <h1>Search Results For '<strong class="text-danger">{{query}}</strong>'</h1>
+            <h2 class="lead"><strong class="text-danger">{{num_results}}</strong> results on page {{page_no}}</h2>								
             </hgroup>
 
             <section class="col-xs-12 col-sm-6 col-md-12">
@@ -25,6 +25,32 @@
                 </article>
                 {% endfor %}
             </section>
+        </div>
+        <div class="container">
+            <ul class="pager">
+                {% if page_no != 1 %}
+                <li>
+                    <form method=POST>
+                        <input type="hidden" name="page_no" value={{ page_no - 1}}>
+                        <input type="hidden" name="query" value={{ query }}>
+                        <div class="input-group-btn">
+                            <button class="btn btn-primary" type="submit">
+                                <p> Previous </p>
+                            </button>
+                        </div>
+                    </form> 
+                </li>
+                {% endif %}
+                <li>
+                    <form method=POST>
+                        <input type="hidden" name="page_no" value={{page_no + 1}}>
+                        <input type="hidden" name="query" value={{ query }}>
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-primary">Next</button>
+                        </div>
+                    </form> 
+                </li>
+            </ul>
         </div>
     </body>
 </html>

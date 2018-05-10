@@ -6,19 +6,21 @@ import re
 app = Flask(__name__)
 idx = metapy.index.make_inverted_index("./config.toml")
 ranker = metapy.index.OkapiBM25() #try different rankers to see which is best.
+RESULTS_PER_PAGE = 10
 
 def cleanhtml(raw_html):
     cleanr = re.compile('<.*?>')
     cleantext = re.sub(cleanr, '', raw_html)
     return cleantext
 
-def get_matching_docs(txtToFind, numberOfResults = 10):
+def get_matching_docs(txtToFind, page_no, numberOfResults = RESULTS_PER_PAGE):
     #print("Searching for:" + txtToFind)
     #print()
     query = metapy.index.Document()
     query.content(txtToFind)
-    best_docs = ranker.score(idx, query, num_results = numberOfResults)
-    return best_docs
+    total_results_needed = page_no * numberOfResults
+    best_docs = ranker.score(idx, query, num_results = total_results_needed)
+    return best_docs[(page_no - 1) * numberOfResults : page_no * numberOfResults]
 
 def get_peripheral(text, target, n):
     corpus_words = text.split(" ")
@@ -87,12 +89,19 @@ def hello():
 
 @app.route('/', methods=['POST'])
 def my_form_post():
-    query = request.form['text']
+    query = request.form['query']
+    if len(query) == 0:
+        return render_template('main.html')
+    try:
+        page_no = int(request.form['page_no'])
+    except: # from the home page
+        page_no = 1
+
     print('querying', query)
     #processed_text = text.upper()
-    best_docs = get_matching_docs(query) #specify text to search for here
+    best_docs = get_matching_docs(query, page_no) #specify text to search for here
     search_results = format_results(best_docs, query)
-    return render_template('results.html', search_results=search_results, num_results=len(best_docs), query=query)
+    return render_template('results.html', search_results=search_results, num_results=len(best_docs), query=query, page_no=page_no)
 
 
 
