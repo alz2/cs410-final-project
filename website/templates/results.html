@@ -32,7 +32,7 @@
                 <li>
                     <form method=POST>
                         <input type="hidden" name="page_no" value={{ page_no - 1}}>
-                        <input type="hidden" name="query" value={{ query }}>
+                        <input type="hidden" name="query" value="{{ query }}">
                         <div class="input-group-btn">
                             <button class="btn btn-primary" type="submit">
                                 <p> Previous </p>
@@ -44,7 +44,7 @@
                 <li>
                     <form method=POST>
                         <input type="hidden" name="page_no" value={{page_no + 1}}>
-                        <input type="hidden" name="query" value={{ query }}>
+                        <input type="hidden" name="query" value="{{ query }}">
                         <div class="input-group-btn">
                             <button type="submit" class="btn btn-primary">Next</button>
                         </div>
