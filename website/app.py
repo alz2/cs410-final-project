@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template
 import metapy
 import re
+from jinja2 import Markup
 
 
 app = Flask(__name__)
@@ -50,7 +51,6 @@ def get_matching_docs(txtToFind, page_no, numberOfResults = RESULTS_PER_PAGE):
     Returns (-1, -1) if target words are not found.
 """
 def get_peripheral(corpus_words, target_words, n):
-    print("seraching for", target_words)
     corpus_words_lower = [t.lower() for t in corpus_words]
     attempt = 0
     found = False
@@ -80,6 +80,14 @@ def get_peripheral(corpus_words, target_words, n):
     # sequence found! Try to get indices for n words left and right
     return (max(0, target_occur - n), min(target_occur + len(target_words) + n, len(corpus_words)))
 
+
+def add_emphasis(corpus, target):
+    lower_target = target.lower()
+    corpus_words = corpus.split(" ")
+    for cwi in range(len(corpus_words)):
+        if corpus_words[cwi].lower() == lower_target:
+            corpus_words[cwi] = '<strong>' + corpus_words[cwi] + '</strong>'
+    return ' '.join(corpus_words)
 
 """
     Returns first sentence of text.
@@ -123,12 +131,20 @@ def format_results(best_docs, query):
                 summary = 'Sorry, No Description Available.'
             else:
                 content_words = content.split(" ")
+                query_words = query.split(" ")
                 summary = ' '.join(content_words[si[0]: si[1]])
                 summary += '...'
+                for q in query_words:
+                    summary = add_emphasis(summary, q)
+                summary = Markup(summary)
         else:
             content_words = content.split(" ")
+            query_words = query.split(" ")
             summary = ' '.join(content_words[si[0]: si[1]])
             summary += '...'
+            for q in query_words:
+                summary = add_emphasis(summary, q)
+            summary = Markup(summary)
 
         search_result.append(summary)
         formatted.append(search_result)
