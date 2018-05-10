@@ -1,7 +1,16 @@
 import json
 import io
+import re
 import metapy
 
+
+"""
+    Gets rid of html tags
+"""
+def cleanhtml(raw_html):
+    cleanr = re.compile('<.*?>')
+    cleantext = re.sub(cleanr, '', raw_html)
+    return cleantext
 
 
 def stem_string(original_str):
@@ -25,6 +34,8 @@ def stem_string(original_str):
     except:
         pass
     
+    if len(full_str) == 0:
+        return " "
 
     return full_str
 
@@ -57,7 +68,7 @@ for curPerson in my_dict.keys():
 
       
         #create a new doc, using the author's name, document title and also some text from the document.
-        docText = research_info[2]
+        docText = cleanhtml(research_info[2])
         if not docText.strip():
             docText = "Text not available for this document"
 
@@ -68,8 +79,7 @@ for curPerson in my_dict.keys():
 
        # doc_content = "Text for doc number {} of Professor {} goes here".format(i, curPerson) #placeholder for actual document content
 
-        partial_txt = docText[:500] #using 500 characters of text for the metadata file. 
-        new_doc_metadata = "{}\t{}\t{}\t{}\n".format(research_info[0], research_info[1], partial_txt, stem_string(partial_txt))     #important: tab needed to delinate schema of each file for metadata.dat.
+        new_doc_metadata = "{}\t{}\t{}\t{}\n".format(research_info[0], research_info[1], docText, stem_string(docText))     #important: tab needed to delinate schema of each file for metadata.dat.
                                                                                             #only store the first 1000 characters of data in the metadata file. 
         corpus_file.write(new_doc) #write as a document. one doc per line
         metadata_file.write(new_doc_metadata)

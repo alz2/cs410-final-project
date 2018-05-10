@@ -2,7 +2,7 @@ type = "line-corpus"
 metadata = [{name="title", type="string"},
             {name = "path", type = "string"},
             {name = "content", type = "string"},
-			{name="stemmedcontent", type="string"}]
+			{name = "stemmedcontent", type="string"}]
 
 
 

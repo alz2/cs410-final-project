@@ -1,9 +1,9 @@
 index = "idx"
 corpus = "line.toml"
+stop-words = "stopwords.txt"
 dataset = "prof_data"
 prefix = "."
-stop-words = "stopwords.txt"
 [[analyzers]]
 	filter = "default-unigram-chain"
-	method = "ngram-word"
 	ngram = 1
+	method = "ngram-word"
