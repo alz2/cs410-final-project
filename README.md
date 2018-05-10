@@ -1,10 +1,12 @@
 # cs410-final-project
-Adding UIUC Research Paper Search Functionality to cs@illinois search
+We crawled over 12,000 research papers written by our UIUC Computer Science Faculty and provided a search interface for the papers.
 
 ## See it in action!
 [Our app](https://whispering-reef-85517.herokuapp.com/)
 
-## Crawler Installation (Only needed if you want to recrawl)
+Note that, on first visit, our app will take a while to load because it is deployed on Heroku.
+
+## Crawler Installation (Uneeded for website, only for Crawler)
 
 ### On EWS
 ```
@@ -27,7 +29,7 @@ pip3 install pypdf2 --user
 ```
 # install Flask
 pip3 install flask --user
-# inside website
+# inside website/ directory
 FLASK_APP=app.py flask app run
 ```
 
@@ -38,24 +40,29 @@ FLASK_APP=app.py flask app run
 4) Save prof->links to papers dict to a json fill so previously crawled papers don't have to be crawled again.
 5) For each link, take first n chars respecting word boundaries and also save into json
 
-### DEPRECIATED Crawling Strategy
-**Stage 0**: Creating professors.csv
-  * For now: Manually lookup professors and record their CV's   
-  * CV's tend to be in two formats -- html and pdf.
-  * Prefer pdf over html!
-  * CSV Schema: Professor_LN, Professor_FN, CV_Link, CV_CODE
-      
-**Stage 1**: Obtaining Links to Research Papers
-  * Given: professors CSV in either html of pdf
-  * In all cases try to retrieve links to research papers
-  * In the case that links to a paper are not present in a cv (e.g [some of these](http://sifaka.cs.uiuc.edu/czhai/selected.html)) store the titles and other info into a list for later google processing
-      
-**Stage 2**: Adding disovered research papers to inverted index
-  * Given: Link to reserach paper in PDF Format
-  * Conduct inverted index calulation stuff (use metapy) and add to inverted index
-      
-**Stage 3**: Adding undiscovered research papers to inverted index
-  * Given: Links to text information of undiscovered links from Stage 1.
-  * Pass information to google scholar and then obtain links to pdf.
-  * Go to Stage 2 to add these to inverted index
-  
+
+## Our Reasearch Paper Retriever (RPR) Crawler
+
+#### Behavior
+Our RPR is our crawler for obtaining the data we needed for buildling our inverted index. Given a list of names to crawl, the RPR crawler will utilize Google scholar profiles, like [this](https://scholar.google.com/citations?user=YU-baPIAAAAJ&hl=en&oi=ao) one to retrieve information on each paper on the profile. Specifically, the RPR crawler will retrieve
+
+* The name of the research paper
+* The link to the research paper
+* Around 5000 characters, respecting word boundaries of the page/pdf behind the link.
+
+#### Handling both PDFs and Web Documents
+The RPR module handles both links that point to web documents as well as pdf files. If the link points to an html file, then the RPR module will attempt to eliniminate unhelpful html tags like script, and iframe. If the link points to a pdf file, then it will download the pdf into a temporary directory, scrape around 5000 characters, and then delete the file after saving the information it collected. 
+
+#### Incremental Crawling
+The RPR also supports incremental crawling via a history file. The history file is in the same format as the json file saved by the crawler. If there is sufficient information for each paper in the history file, the RPR crawler will not crawl it again. The history file is especially useful if the crawler runs into 503's in which it has to restart the crawl on a different IP. 
+
+#### Example of using RPR Crawler Module To Crawl Papers Given List of Professors
+```python
+from crawl.rpr import PaperRetriever
+
+# TEST 1 retreive papers for one professor with no history file
+save_as_file = "test1.json" # the file which the data will be save to
+profs = ['Svetlana Lazebnik', 'Chengxiang Zhai'] # crawl the papers of these professors
+paper_retriever = PaperRetriever(profs, save_as_file, None, num_threads=3) # delegate the work on 3 threads without history
+paper_retriever.retrieve()
+```
