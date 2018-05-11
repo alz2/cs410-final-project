@@ -28,10 +28,8 @@ def stem_string(original_str):
     return new_str
 
 
-"""
-    Polls inverted index given a page number and number of results per page
-"""
 def get_matching_docs(txtToFind, page_no, numberOfResults = RESULTS_PER_PAGE):
+    """Polls inverted index given a page number and number of results per page"""
     #print("Searching for:" + txtToFind)
     #print()
     query = metapy.index.Document()
@@ -41,16 +39,14 @@ def get_matching_docs(txtToFind, page_no, numberOfResults = RESULTS_PER_PAGE):
     return best_docs[(page_no - 1) * numberOfResults : page_no * numberOfResults]
 
 
-"""
-    Returns indices of n words around <target> in corpus <text>. If there are multiple occurances
-    of <target> the function will only act on the first occurance. 
-
-    The function will look for the target words next to eachother. Otherwise it will default searching
-    singular words in the target words.
-
-    Returns (-1, -1) if target words are not found.
-"""
 def get_peripheral(corpus_words, target_words, n):
+    """
+        Finds indices of n words around <target> in corpus <text>. 
+        If there are multiple occurances of <target> the function will 
+        only act on the first occurance. 
+
+        Returns (-1, -1) if target words are not found.
+    """
     corpus_words_lower = [t.lower() for t in corpus_words]
     attempt = 0 # index to begin search
     found = False
@@ -82,6 +78,7 @@ def get_peripheral(corpus_words, target_words, n):
 
 
 def add_emphasis(corpus, target):
+    """Adds <strong> tags around all stemmed occurances of target in text corpus"""
     lower_target = stem_string(target.lower())
     corpus_words = corpus.split(" ")
     for cwi in range(len(corpus_words)):
@@ -89,20 +86,11 @@ def add_emphasis(corpus, target):
             corpus_words[cwi] = '<strong>' + corpus_words[cwi] + '</strong>'
     return ' '.join(corpus_words)
 
-"""
-    Returns first sentence of text.
-"""
-def get_first_sentence(text):
-    sentences = text.split('.')
-    if len(sentences) < 2:
-        return ''
-    return sentences[0]
 
-
-"""
-    Formats results returned by metapy in a format expected by the template results.html
-"""
 def format_results(best_docs, query): 
+    """
+        Formats results returned by metapy in a format expected by the template results.html
+    """
     # stem the queryquery 
     stemmed_query_wds = stem_string(query).split(" ")
     if stemmed_query_wds[-1] == "": # weird split case
@@ -170,11 +158,9 @@ def format_results(best_docs, query):
 def hello():
     return render_template('main.html')
 
-"""
-    Search endpoint
-"""
 @app.route('/', methods=['POST'])
 def my_form_post():
+    """Search endpoint"""
     query = request.form['query'].lower()
     if len(query) == 0:
         return render_template('main.html')

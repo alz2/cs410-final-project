@@ -21,15 +21,17 @@ dirpath = tempfile.TemporaryDirectory() # temporary directory which will be clea
 # HELPERS
 # ----------------------------------------------------------------------------
 
-"""
-Given a soup object parsed by BeautifulSoup, extract around 5000 chars 
-respecting word boundaries from the texts of the htmls
-Args:
-    soup -- BeautifulSoup parsed html/connection
-Return:
-    String of text
-"""
 def extract_text_from_soup(soup):
+    """
+    Given a soup object parsed by BeautifulSoup, extract around 5000 chars 
+    respecting word boundaries from the texts of the htmls after removing
+    unhelpful tags.
+
+    Args:
+        soup (BeautifulSoup): parsed html/connection
+    Return:
+        String of text
+    """
     # https://stackoverflow.com/questions/328356/extracting-text-from-html-file-using-python
     # kill all script and style elements
     if soup is None:
@@ -65,30 +67,30 @@ def extract_text_from_soup(soup):
     return res 
 
 
-"""
-Given a url string determine whether or not it represents a pdf
-Args:
-    link -- string url
-Return:
-    True/False
-"""
 def is_pdf(link):
+    """
+    Given a url string determine whether or not it represents a pdf
+    Args:
+        link (str): url
+    Return:
+        True/False
+"""
     if len(link) < 4:
         return False
     ending = link[len(link) - 4 : ]
     return ending == ".pdf" or ending == "=pdf" # pdf
 
 
-"""
-Downloads pdf from link as 'name' in directory 'dirpath'
-Args:
-    link -- url of pdf
-    name -- name to save pdf as
-    dirpath -- path to the save directory
-Return:
-    String path to the pdf
-"""
 def retrive_pdf(link, name, dirpath):
+    """
+    Downloads pdf from link as 'name' in directory 'dirpath'
+    Args:
+        link (str): url of pdf
+        name (str): name to save pdf as
+        dirpath (str): path to the save directory
+    Return:
+        String path to the pdf
+    """
     fullname = dirpath + '/' + name
     try:
         urllib.request.urlretrieve(link, fullname)
@@ -97,14 +99,14 @@ def retrive_pdf(link, name, dirpath):
     return fullname
 
 
-"""
-Extracts around 5000 chars respecting word boundaries from pdf
-Args:
-    fullname -- full path to pdf
-Return:
-    String result
-"""
 def extract_text_from_pdf(fullname):
+    """
+    Extracts around 5000 chars respecting word boundaries from pdf
+    Args:
+        fullname (str): full path to pdf
+    Return:
+        String result
+    """
     f = open(fullname, 'rb') 
     try:
         pdfReader = PyPDF2.PdfFileReader(f) # open file
@@ -149,23 +151,21 @@ def extract_text_from_pdf(fullname):
     return res
 
 
-"""
-Helper function to make sure document text is added to right index
-"""
 def insert_doc_text(paper_info, doc_text):
+"""Helper function to make sure document text is added to right index"""
     if len(paper_info) == 2:
         paper_info.append(doc_text)
     if len(paper_info) == 3:
         paper_info[2] = doc_text
 
 
-"""
-Retrieves the document text of a paper_info list. Modifies paper_info.
-Args:
-    paper_info -- [NAME_OF_PAPER, LINK, <optional>""]
-    driver -- selenium webdriver used to retrieve html results
-"""
 def retrieve_doc_text(paper_info, driver):
+    """
+    Retrieves the document text of a paper_info list. Modifies paper_info.
+    Args:
+        paper_info (list) : [NAME_OF_PAPER, LINK, <optional>""]
+        driver (webdriver) : webdriver used to retrieve html results
+    """
     link = paper_info[1]
     print(link)
     if is_pdf(link): # pdf
@@ -194,10 +194,8 @@ def retrieve_doc_text(paper_info, driver):
         insert_doc_text(paper_info, res)
 
 
-"""
-Helper function for threads. This is basically the main retrieval method
-"""
 def _worker_paper_retrieve(author_publications, prof, results, errors, seen, driver):
+    """Helper function for threads. This is basically the main retrieval method"""
     for p in author_publications:
         if p.bib['title'] not in seen: # have not seen the paper-- must retrieve URL
             pub_filled = p.fill() # get more information about publication
@@ -227,28 +225,32 @@ def _worker_paper_retrieve(author_publications, prof, results, errors, seen, dri
             retrieve_doc_text(pi, driver)
 
 
-"""
-Helper function to splti a list to n chunks
-# https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
-"""
 def splitnchunks(a, n):
+    """
+    Helper function to split a list to n chunks
+    # https://stackoverflow.com/questions/2130016/splitting-a-list-into-n-parts-of-approximately-equal-length
+    Args:
+        a (list) : the list
+        n (int) : number of chunks
+    """
     k, m = divmod(len(a), n)
     return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
 
 
 class PaperRetriever:
 
-    """
-        Constructor for the PaperRetriever:
-        Args:
-            professor_list: List of professor names
-            history: a json dict of previously retrived dict of key=professor, value=[(title, link)]. 
-                    Can be None if running without history
-            num_threads: (default 1) Number of threads used to parse scholar... be careful of 503s
-            save_as: file to the newly parsed json
-            
-    """
     def __init__(self, professor_list, save_as, history, num_threads=1):
+        """
+            Constructor for the PaperRetriever:
+            Args:
+                professor_list (list): List of professor names
+                history (dict): a json dict of previously retrived dict of 
+                                key=professor, value=[(title, link)]. 
+                                Can be None if running without history
+                num_threads (int): Number of threads used to parse scholar... be careful of 503s
+                save_as (str): file name for the newly parsed json
+                
+        """
         if professor_list is None:
             raise ValueError('Must provide a list of professors')
 
@@ -280,14 +282,17 @@ class PaperRetriever:
             prior_file.close()
 
 
+    def retrieve(self):
     """
-        This function will go through self.professors and retrieve the url of each paper the PaperRetriever can find.
-        The papers retrieved will be new -- that is it will not re-retrieve URLs for paper's it has already retrieved.
+        This function will go through self.professors and 
+        retrieves the url of each paper the PaperRetriever can find.
+        The papers retrieved will be new :that is it will not re-retrieve URLs for the papers
+        it has already retrieved.
 
-        After each paper from a professor is retrieved, the PaperRetriever will save the current results to self.save_as
+        After each paper from a professor is retrieved, 
+        the PaperRetriever will save the current results to self.save_as
         to prevent a crash from messing up the whole crawl.
     """
-    def retrieve(self):
         for prof in self.professors:
 
             print("Retrieving Papers for", prof)
@@ -329,25 +334,19 @@ class PaperRetriever:
         return self.results
 
 
-    """
-    Dump the contents of self.results into a self.save_as as json
-    """
     def save_results_as_json(self):
+    """Dump the contents of self.results into a self.save_as as json"""
         json_str = json.dumps(self.results)
         with open(self.save_as, "w+") as outfile: # truncate aka rewrite
             outfile.write(json_str)
         outfile.close()
 
-    """
-    Dump the contents of self.errors into ERRORS_<self.save_as> as json
-    """
     def save_errors_as_json(self):
+    """Dump the contents of self.errors into ERRORS_<self.save_as> as json"""
         json_str = json.dumps(self.errors)
         if len(json_str) != 0:
             err_file_name = "ERRORS_" + self.save_as 
             with open(err_file_name, "w+") as err_file:
                 err_file.write(json_str)
             err_file.close()
-
-
 
