@@ -3,14 +3,21 @@
 <html>
     <head>
         <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <style type="text/css">
+            .searchbox{
+                margin-top: 3%;
+                margin-left: 35%;
+                margin-right: 5%;
+            }
+        </style>
     </head>
     <body>
         <h1 align='center'>Search UIUC Papers</h1>
         <form method="POST">
             <div class="row">
-                <div class="col-xs-6 col-md-4">
+                <div class="col-xs-6 col-md-4 searchbox">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search" name="query"/>
+                        <input type="text" class="form-control" placeholder="Search" name="query" align="center"/>
                         <div class="input-group-btn">
                             <button class="btn btn-primary" type="submit">
                                 <span class="glyphicon glyphicon-search"></span>

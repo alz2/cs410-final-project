@@ -3,7 +3,7 @@
 <html>
     <head>
         <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-        <!------ Include the above in your HEAD tag ---------->
+        <!--- Include the above in your HEAD tag -->
     </head>
 
     <body>
@@ -12,8 +12,15 @@
             <hgroup class="mb20">
             <h1>Search Results For <q><strong class="text-danger">{{query}}</strong></q></h1>
             <h2 class="lead"><strong class="text-danger">{{num_results}}</strong> results on page {{page_no}}</h2>								
+            <h2 class="lead"><strong class="text-danger">{{total_results}}</strong> total results found</h2>								
+            <div class="col-md-4">
+                <a href='/'>
+                <button class="btn btn-lg btn-primary btn-effect btn-effect1 btn-effect1b"><span class="icon glyphicon glyphicon-home"></span>Home</button>
+                </a>
+            </div>
             </hgroup>
 
+            <!-- For each result -->
             <section class="col-xs-12 col-sm-6 col-md-12">
                 {% for n in search_results %}
                 <article class="search-result row">
@@ -26,6 +33,7 @@
                 {% endfor %}
             </section>
         </div>
+        <!-- Page next/prev buttons -->
         <div class="container">
             <ul class="pager">
                 {% if page_no != 1 %}

@@ -7,6 +7,7 @@ from jinja2 import Markup
 app = Flask(__name__)
 idx = metapy.index.make_inverted_index("./config.toml")
 ranker = metapy.index.OkapiBM25() #try different rankers to see which is best.
+total_results = idx.num_docs()
 RESULTS_PER_PAGE = 10
 
 
@@ -35,8 +36,8 @@ def get_matching_docs(txtToFind, page_no, numberOfResults = RESULTS_PER_PAGE):
     query = metapy.index.Document()
     query.content(txtToFind)
     total_results_needed = page_no * numberOfResults
-    best_docs = ranker.score(idx, query, num_results = total_results_needed)
-    return best_docs[(page_no - 1) * numberOfResults : page_no * numberOfResults]
+    best_docs = ranker.score(idx, query, total_results)
+    return (best_docs[(page_no - 1) * numberOfResults : page_no * numberOfResults], len(best_docs))
 
 
 def get_peripheral(corpus_words, target_words, n):
@@ -171,9 +172,11 @@ def my_form_post():
 
     print('querying', query)
 
-    best_docs = get_matching_docs(query, page_no) #specify text to search for here
+    best_docs_info = get_matching_docs(query, page_no) #specify text to search for here
+    best_docs = best_docs_info[0]
+    total_results = best_docs_info[1]
     search_results = format_results(best_docs, query)
-    return render_template('results.html', search_results=search_results, num_results=len(best_docs), query=query, page_no=page_no)
+    return render_template('results.html', search_results=search_results, num_results=len(best_docs), query=query, page_no=page_no, total_results=total_results)
 
 
 
