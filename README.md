@@ -35,10 +35,9 @@ FLASK_APP=app.py flask app run
 
 ## Methodology For Retrieving Data for Inverted Index
 1) Obtain list of names of all professors (see professors.txt)
-2) For professors with google scholar profiles, e.g [Professor Zhai](https://scholar.google.com/citations?user=YU-baPIAAAAJ&hl=en&oi=ao) use Python module [scholarly](https://pypi.python.org/pypi/scholarly/0.2.3) obtain the links to papers.
-3) For professors with no google scholar profiles find other way to obtain links -- maybe python module scholar to recursively crawl google scholar search results. (NOT YET IMPLMEENTED)
-4) Save prof->links to papers dict to a json fill so previously crawled papers don't have to be crawled again.
-5) For each link, take first n chars respecting word boundaries and also save into json
+2) Utilize google scholar profiles, like [Professor Zhai's](https://scholar.google.com/citations?user=YU-baPIAAAAJ&hl=en&oi=ao) and Python module [scholarly](https://pypi.python.org/pypi/scholarly/0.2.3) obtain the link for eah paper.
+3) For each link discovered, take first 5000 chars respecting word boundaries.
+4) After a professor is crawled, save the json to a file to prevent crashes from corrupting all of the data
 
 
 ## Our Reasearch Paper Retriever (RPR) Crawler
@@ -64,5 +63,15 @@ from crawl.rpr import PaperRetriever
 save_as_file = "test1.json" # the file which the data will be save to
 profs = ['Svetlana Lazebnik', 'Chengxiang Zhai'] # crawl the papers of these professors
 paper_retriever = PaperRetriever(profs, save_as_file, None, num_threads=3) # delegate the work on 3 threads without history
-paper_retriever.retrieve()
+paper_retriever.retrieve() # execute the crawl
 ```
+
+
+## Contributions
+
+#### Andrew Zhang (alz2)
+* Worked on Crawling the data (RPR Module)
+* Worked on Backend Flask App
+  * Paging Results
+  * Description Algorithm
+  * Templating
