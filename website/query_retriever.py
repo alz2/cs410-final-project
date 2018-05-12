@@ -4,9 +4,6 @@
 import metapy
 import sys
 
-if len(sys.argv) != 2:
-    raise ValueError('python3 query_retriever.py {QUERY}')
-
 idx = metapy.index.make_inverted_index("config.toml")
 ranker = metapy.index.OkapiBM25() #try different rankers to see which is best.
 
@@ -34,8 +31,15 @@ def print_results(best_docs):
 
 
 
-best_docs = get_matching_docs(sys.argv[1]) #specify text to search for here
-print(best_docs)
-print_results(best_docs)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        raise ValueError('python3 query_retriever.py {QUERY}')
+    best_docs = get_matching_docs(sys.argv[1]) #specify text to search for here
+    print(best_docs)
+    print_results(best_docs)
+
+
+
+
 
 
