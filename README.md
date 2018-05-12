@@ -66,6 +66,22 @@ paper_retriever = PaperRetriever(profs, save_as_file, None, num_threads=3) # del
 paper_retriever.retrieve() # execute the crawl
 ```
 
+## Building Inverted Index for Search
+To enable search, we decided to create an inverted index using metapy, a data science toolkit. 
+Crawler returned data in JSON format. We needed to convert this to  a .dat file that metapy could access. 
+We created two .dat files: one with the professor data and a metadata file. Each line in the professor data file was a document that 
+we crawled (we used a line corpus for the project). The metadata file contains information such as the title of the document and a link to the document. 
+
+After data was changed to .dat, inverted index was built using metapy. We removed the lemur stop-words to avoid storing unnecessary terms.  OkapiBM25 ranker was used as the ranking function. Note that data was processed as unigrams.
+
+
+#### Example of using the Query Retriever Module to Retrieve Documents Given Query
+```python 
+from query_retriever import get_matching_docs, print_results
+best_docs = get_matching_docs("Zhai")
+print_results(best_docs)
+```
+
 
 ## Contributions
 
@@ -75,3 +91,13 @@ paper_retriever.retrieve() # execute the crawl
   * Paging Results
   * Description Algorithm
   * Templating
+  
+#### Chinedu Emeka (cemeka2)
+ * Worked on building inverted index with data and comparing rankers (using metapy)
+ 
+ * Worked on Flask App
+     * Methods to retrieve documents 
+     * Added logic for app (e.g. stemming for queries to retrieve base words)
+     * Worked on design of app (implemented some aesthetic features). 
+   
+ 
